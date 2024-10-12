@@ -36,6 +36,18 @@ const userSchema = new mongoose.Schema({
 let User = mongoose.model("User", userSchema);
 let Exercise = mongoose.model("Exercise", exerciseSchema);
 
+// Enpoints GET
+
+app.get("/api/users", async (req, res, next) => {
+  try {
+    const users = await User.find({});
+    res.json(users);
+  } catch (err) {
+    console.log(err);
+    res.json({ text: "Users couldn't be accessed", error: err });
+  }
+});
+
 // Endpoints POSTS
 
 app.post("/api/users", async (req, res, next) => {
