@@ -51,6 +51,9 @@ app.get("/api/users", async (req, res, next) => {
 app.get("/api/users/:_id/logs", async (req, res, next) => {
   try {
     const userId = req.params._id;
+    const from = req.query.to ? new Date(req.query.from) : new Date();
+    const to = req.query.to ? new Date(req.query.to) : new Date();
+    const limit = Number(req.query.limit) || 0;
 
     const user = await User.findOne({ _id: userId });
 
@@ -58,7 +61,9 @@ app.get("/api/users/:_id/logs", async (req, res, next) => {
       res.json({ text: "User not found" });
     }
 
-    const exercises = await Exercise.find({ userId });
+    const exercises = await Exercise.find({
+      userId: userId,
+    }).limit(limit);
 
     if (!exercises) {
       res.json({ text: "This user doesn't have excercises" });
