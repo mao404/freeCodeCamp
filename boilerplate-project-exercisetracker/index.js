@@ -48,6 +48,43 @@ app.get("/api/users", async (req, res, next) => {
   }
 });
 
+app.get("/api/users/:_id/logs", async (req, res, next) => {
+  try {
+    const userId = req.params._id;
+
+    const user = await User.findOne({ _id: userId });
+
+    if (!user) {
+      res.json({ text: "User not found" });
+    }
+
+    const exercises = await Exercise.find({ userId });
+
+    if (!exercises) {
+      res.json({ text: "This user doesn't have excercises" });
+    }
+
+    const exerCount = await Exercise.countDocuments({ userId: userId });
+
+    const parsedDatesLog = exercises.map((exercise) => {
+      return {
+        description: exercise.description,
+        duration: exercise.duration,
+        date: new Date(exercise.date).toDateString(),
+      };
+    });
+
+    res.json({
+      _id: user._id,
+      username: user.username,
+      count: exerCount,
+      log: parsedDatesLog,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // Endpoints POSTS
 
 app.post("/api/users", async (req, res, next) => {
